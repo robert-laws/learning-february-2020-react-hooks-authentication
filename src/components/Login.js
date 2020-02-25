@@ -5,6 +5,8 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Link, withRouter } from 'react-router-dom';
 
+import firebase from '../firebase/firebase';
+
 const styles = theme => ({
   main: {
     width: 'auto',
@@ -65,7 +67,7 @@ const Login = props => {
             </InputLabel>
             <Input id='password' type='password' name='password' autoComplete='off' autoFocus value={password} onChange={e => setPassword(e.target.value)} />
           </FormControl>
-          <Button type='submit' fullWidth variant='contained' color='primary' className={classes.submit}>
+          <Button type='submit' fullWidth variant='contained' color='primary' className={classes.submit} onClick={login}>
             Login
           </Button>
           <Button type='submit' fullWidth variant='contained' color='secondary' component={Link} to='/register' className={classes.submit}>
@@ -76,9 +78,10 @@ const Login = props => {
     </main>
   )
 
-  const login = async () => {
+  async function login() {
     try {
       await firebase.login(email, password);
+      props.history.replace('/dashboard')
     } catch(error) {
       console.log(error.message)
     }

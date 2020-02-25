@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import HomePage from './HomePage';
 import Login from './Login';
@@ -6,13 +6,24 @@ import Register from './Register';
 import Dashboard from './Dashboard';
 
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import { CssBaseline } from '@material-ui/core';
+import { CssBaseline, CircularProgress } from '@material-ui/core';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
+import firebase from '../firebase/firebase';
 
 const theme = createMuiTheme();
 
 function App() {
-  return (
+
+  const [firebaseInitialized, setFirebaseInitialized] = useState(false);
+
+  useEffect(() => {
+    firebase.isInitialized().then(val => {
+      setFirebaseInitialized(val)
+    })
+  })
+
+  return firebaseInitialized !== false ? (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
@@ -24,7 +35,9 @@ function App() {
         </Switch>
       </Router>
     </MuiThemeProvider>
-  );
+  ) : <div id='loader'>
+    <CircularProgress />
+  </div>
 }
 
 export default App;

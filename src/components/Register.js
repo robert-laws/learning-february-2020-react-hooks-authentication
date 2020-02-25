@@ -5,6 +5,8 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { Link, withRouter } from 'react-router-dom';
 
+import firebase from '../firebase/firebase';
+
 const styles = theme => ({
   main: {
     width: 'auto',
@@ -44,6 +46,7 @@ const Register = props => {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [quote, setQuote] = useState('');
 
   return (
     <main className={classes.main}>
@@ -61,7 +64,7 @@ const Register = props => {
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="lastName">Last Name</InputLabel>
-            <Input id="lastName" name="lastName" autoComplete="off" autoFocus value={lastName} onChange={e => setLastName(e.target.value)} />
+            <Input id="lastName" name="lastName" autoComplete="off" value={lastName} onChange={e => setLastName(e.target.value)} />
           </FormControl>
           <FormControl margin="normal" required fullWidth>
             <InputLabel htmlFor="email">Email Address</InputLabel>
@@ -71,7 +74,11 @@ const Register = props => {
             <InputLabel htmlFor="password">Password</InputLabel>
             <Input name="password" type="password" id="password" autoComplete="off" value={password} onChange={e => setPassword(e.target.value)}  />
           </FormControl>
-          <Button	type="submit"	fullWidth variant="contained" color="primary"  className={classes.submit}>
+          <FormControl margin="normal" required fullWidth>
+            <InputLabel htmlFor="quote">Your Favorite Quote</InputLabel>
+            <Input id="quote" name="quote" autoComplete="off" value={quote} onChange={e => setQuote(e.target.value)}  />
+          </FormControl>
+          <Button	type="submit"	fullWidth variant="contained" color="primary" onClick={onRegister} className={classes.submit}>
             Register
           </Button>
           <Button type="submit" fullWidth variant="contained" color="secondary" component={Link} to="/login" className={classes.submit}>
@@ -81,6 +88,18 @@ const Register = props => {
       </Paper>
     </main>
   )
+
+  async function onRegister() {
+    let name = `${firstName} ${lastName}`;
+
+    try {
+      await firebase.register(name, email, password);
+      await firebase.addQuote(quote)
+      props.history.replace('/dashboard');
+    } catch(error) {
+      console.log(error.message)
+    }
+  }
 }
 
 export default withRouter(withStyles(styles)(Register));
